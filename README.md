@@ -33,6 +33,8 @@ This JavaFX application simulates a Facebook post interface, allowing users to i
 <p>Go to File -> Project Structure -> Libraries and add the JavaFX 21 SDK as a library to the project. Point to the lib folder of the JavaFX SDK.</p>
 <p>Once the library is applied, the JavaFX classes will be recognised by the IDE, and then you can run the Text to Speech project.</p>
 
+<p>4. Run the Main.java file to start the application.</p>
+
 
 <h2>Screenshot</h2>
 
