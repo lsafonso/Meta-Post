@@ -3,9 +3,7 @@ package facebook.metapost;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -17,82 +15,41 @@ import objects.PostAudience;
 import objects.Reactions;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
+
+/**
+ * Controller class for handling the logic of a Facebook post.
+ */
 
 public class PostController implements Initializable{
 
+    // FXML-injected fields for UI elements
     @FXML
-    private ImageView audience;
+    private ImageView audience, imgAngry, imgCare, imgHaha, imgLike, imgLove, imgPost, imgProfile, imgSad, imgVerified, imgWow, imgReaction;
 
     @FXML
-    private Label caption;
+    private Label caption, date, nbComments, nbReactions, nbShares, reactionName, username;
 
     @FXML
-    private Label date;
+    private HBox likeContainer, reactionsContainer;
 
-    @FXML
-    private ImageView imgAngry;
-
-    @FXML
-    private ImageView imgCare;
-
-    @FXML
-    private ImageView imgHaha;
-
-    @FXML
-    private ImageView imgLike;
-
-    @FXML
-    private ImageView imgLove;
-
-    @FXML
-    private ImageView imgPost;
-
-    @FXML
-    private ImageView imgProfile;
-
-    @FXML
-    private ImageView imgSad;
-
-    @FXML
-    private ImageView imgVerified;
-
-    @FXML
-    private ImageView imgWow;
-
-    @FXML
-    private HBox likeContainer;
-
-    @FXML
-    private Label nbComments;
-
-    @FXML
-    private Label nbReactions;
-
-    @FXML
-    private Label nbShares;
-
-    @FXML
-    private HBox reactionsContainer;
-
-    @FXML
-    private Label username;
-
-    @FXML
-    private ImageView imgReaction;
-
-    @FXML
-    private Label reactionName;
-
+    // Variables to track the reaction state and timing
     private long startTime = 0;
     private Reactions currentReaction;
     private Post post;
 
+    /**
+     * Handles the press event on the like container to start timing.
+     */
     @FXML
     public void onLikeContainerPressed(MouseEvent me){
         startTime = System.currentTimeMillis();
     }
 
+    /**
+     * Handles the release event on the like container to determine if the reaction panel should be shown or a like toggled.
+     */
     @FXML
     public void onLikeContainerMouseReleased(MouseEvent me){
         if(System.currentTimeMillis() - startTime > 500){
@@ -101,122 +58,113 @@ public class PostController implements Initializable{
             if(reactionsContainer.isVisible()){
                 reactionsContainer.setVisible(false);
             }
-            if(currentReaction == Reactions.NON){
-                setReaction(Reactions.LIKE);
-            }else{
-                setReaction(Reactions.NON);
-            }
+            toggleReaction(Reactions.LIKE);
+        }
+    }
+    /**
+     * Toggles the current reaction between the given reaction and no reaction.
+     */
+    private void toggleReaction(Reactions reaction) {
+        if (currentReaction == Reactions.NON) {
+            setReaction(reaction);
+        } else {
+            setReaction(Reactions.NON);
         }
     }
 
-    @FXML
-    public void onReactionImgPressed(MouseEvent me){
-        switch (((ImageView) me.getSource()).getId()){
-            case "imgLove":
-                setReaction(Reactions.LOVE);
-                break;
-            case "imgCare":
-                setReaction(Reactions.CARE);
-                break;
-            case "imgHaha":
-                setReaction(Reactions.HAHA);
-                break;
-            case "imgWow":
-                setReaction(Reactions.WOW);
-                break;
-            case "imgSad":
-                setReaction(Reactions.SAD);
-                break;
-            case "imgAngry":
-                setReaction(Reactions.ANGRY);
-                break;
-            default:
-                setReaction(Reactions.LIKE);
-                break;
+    /**
+     * Handles the press event on any reaction image to set the corresponding reaction.
+     */
+   @FXML
+   private void onReactionImgPressed(MouseEvent me) {
+       String sourceId = ((ImageView) me.getSource()).getId();
+       Reactions reaction = Reactions.fromId(sourceId);
+       setReaction(reaction != null ? reaction : Reactions.LIKE);
+       reactionsContainer.setVisible(false);
+   }
+
+    /**
+     * Sets the current reaction for the post.
+     */
+    private void setReaction(Reactions reaction) {
+        if (reaction != currentReaction) {
+            updateReactionDisplay(reaction);
+            updateReactionCount(reaction);
         }
-        reactionsContainer.setVisible(false);
     }
 
-    public void setReaction(Reactions reaction){
-        Image image = new Image(getClass().getResourceAsStream(reaction.getImgSrc()));
-        imgReaction.setImage(image);
+    /**
+     * Updates the UI elements to reflect the selected reaction.
+     */
+    private void updateReactionDisplay(Reactions reaction) {
+        imgReaction.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(reaction.getImgSrc()))));
         reactionName.setText(reaction.getName());
         reactionName.setTextFill(Color.web(reaction.getColor()));
+    }
 
-        if(currentReaction == Reactions.NON){
+    /**
+     * Updates the count of reactions on the post.
+     */
+    private void updateReactionCount(Reactions reaction) {
+        if (currentReaction == Reactions.NON) {
             post.setTotalReactions(post.getTotalReactions() + 1);
         }
-
-        currentReaction = reaction;
-
-        if(currentReaction == Reactions.NON){
+        if (reaction == Reactions.NON) {
             post.setTotalReactions(post.getTotalReactions() - 1);
         }
-
         nbReactions.setText(String.valueOf(post.getTotalReactions()));
+        currentReaction = reaction;
     }
 
-    public void setData(Post post){
+    /**
+     * Sets the data for the post and updates the UI.
+     */
+    public void setData(Post post) {
         this.post = post;
-        Image img;
-        img = new Image(getClass().getResourceAsStream(post.getAccount().getProfileImg()));
-        imgProfile.setImage(img);
+        updateUI();
+    }
+
+    /**
+     * Updates the UI elements with the post data.
+     */
+    private void updateUI() {
+        imgProfile.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(post.getAccount().getProfileImg()))));
         username.setText(post.getAccount().getName());
-        if(post.getAccount().isVerified()){
-            imgVerified.setVisible(true);
-        }else{
-            imgVerified.setVisible(false);
-        }
-
+        imgVerified.setVisible(post.getAccount().isVerified());
         date.setText(post.getDate());
-        if(post.getAudience() == PostAudience.PUBLIC){
-            img = new Image(getClass().getResourceAsStream(PostAudience.PUBLIC.getImgSrc()));
-        }else{
-            img = new Image(getClass().getResourceAsStream(PostAudience.FRIENDS.getImgSrc()));
-        }
-        audience.setImage(img);
-
-        if(post.getCaption() != null && !post.getCaption().isEmpty()){
-            caption.setText(post.getCaption());
-        }else{
-            caption.setManaged(false);
-        }
-
-        if(post.getImage() != null && !post.getImage().isEmpty()){
-            img = new Image(getClass().getResourceAsStream(post.getImage()));
-            imgPost.setImage(img);
-        }else{
-            imgPost.setVisible(false);
-            imgPost.setManaged(false);
-        }
-
+        audience.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(post.getAudience().getImgSrc()))));
+        caption.setText(post.getCaption());
+        imgPost.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(post.getImage()))));
         nbReactions.setText(String.valueOf(post.getTotalReactions()));
         nbComments.setText(post.getNbComments() + " comments");
-        nbShares.setText(post.getNbShares()+" shares");
-
+        nbShares.setText(post.getNbShares() + " shares");
         currentReaction = Reactions.NON;
-    }
-
-    private Post getPost(){
-        Post post = new Post();
-        Account account = new Account();
-        account.setName("Leandro Afonso");
-        account.setProfileImg("/img/user.png");
-        account.setVerified(true);
-        post.setAccount(account);
-        post.setDate("13 Aug, 2024 at 18:00 PM");
-        post.setAudience(PostAudience.PUBLIC);
-        post.setCaption("Hello everybody.");
-        post.setImage("/img/img2.jpg");
-        post.setTotalReactions(10);
-        post.setNbComments(2);
-        post.setNbShares(3);
-
-        return post;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Initialise the controller with a sample post
         setData(getPost());
+    }
+
+    /**
+     * Creates a sample post.
+     */
+    private Post getPost(){
+        Post post = new Post();
+        Account account = new Account();
+        account.setName("Leandro Afonso");
+        account.setProfileImg("/img/user2.png");
+        account.setVerified(true);
+        post.setAccount(account);
+        post.setDate("12h");
+        post.setAudience(PostAudience.PUBLIC);
+        post.setCaption("Hello everybody, don't forget to check my Behance and GitHub profile.");
+        post.setImage("/img/img2.jpg");
+        post.setTotalReactions(36);
+        post.setNbComments(18);
+        post.setNbShares(7);
+
+        return post;
     }
 }
