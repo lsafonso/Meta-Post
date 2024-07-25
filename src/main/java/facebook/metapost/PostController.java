@@ -154,16 +154,16 @@ public class PostController implements Initializable{
         Post post = new Post();
         Account account = new Account();
         account.setName("Leandro Afonso");
-        account.setProfileImg("/img/user2.png");
+        account.setProfileImg("/img/user.png");
         account.setVerified(true);
         post.setAccount(account);
-        post.setDate("12h");
+        post.setDate("9h");
         post.setAudience(PostAudience.PUBLIC);
-        post.setCaption("Hello everybody, don't forget to check my Behance and GitHub profile.");
+        post.setCaption("Hello, everybody!");
         post.setImage("/img/img2.jpg");
-        post.setTotalReactions(36);
-        post.setNbComments(18);
-        post.setNbShares(7);
+        post.setTotalReactions(23);
+        post.setNbComments(8);
+        post.setNbShares(2);
 
         return post;
     }

@@ -17,3 +17,37 @@
     -fx-order-width: 1;
     -fx-border-color: #606266;
 }
+
+/* Updated CSS for dark theme background
+.post-background {
+    -fx-background-color: #18191A;
+    -fx-background-radius: 15;
+    -fx-effect: dropShadow(three-pass-box, rgba(0,0,0,0.3), 5.0, 0.0, 0.0, 5.0);
+    -fx-border-color: #3A3B3C;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+}
+
+.reactions-container {
+    -fx-background-color: #242526;
+    -fx-background-radius: 50;
+    -fx-effect: dropShadow(three-pass-box, rgba(0,0,0,0.3), 5.0, 0.0, 0.0, 5.0);
+    -fx-border-width: 1;
+    -fx-border-color: #3A3B3C;
+    -fx-border-radius: 50;
+}
+
+.top-border {
+    -fx-border-width: 1;
+    -fx-border-color: #3A3B3C;
+}
+
+.label {
+    -fx-text-fill: #E4E6EB;
+}
+
+.image-view {
+    -fx-background-color: transparent;
+}
+
+*/
